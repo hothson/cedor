@@ -60,6 +60,20 @@
                 "description": "Return access_token",
                 "parameters": [
                     {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "description": "application/json",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "X-Requested-With",
+                        "in": "header",
+                        "description": "X-XMLHttpRequest",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
                         "name": "email",
                         "in": "query",
                         "required": true,
@@ -76,6 +90,12 @@
                         "in": "query",
                         "required": false,
                         "type": "boolean"
+                    },
+                    {
+                        "name": "Auto Login",
+                        "in": "query",
+                        "required": false,
+                        "type": "boolean"
                     }
                 ],
                 "responses": {
@@ -88,6 +108,27 @@
                                 "expires_at": "string"
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "get": {
+                "description": "Return Message",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     }
                 }
             }

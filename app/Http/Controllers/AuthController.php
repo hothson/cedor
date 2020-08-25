@@ -69,6 +69,20 @@ class AuthController extends Controller
 * @SWG\Post(
 *     path="/api/auth/login",
 *     description="Return access_token",
+*      @SWG\Parameter(
+*         name="Content-Type",
+*         description="application/json",
+*         in="header",
+*         type="string",
+*         required=true,
+*     ),
+*      @SWG\Parameter(
+*         name="X-Requested-With",
+*         description="X-XMLHttpRequest",
+*         in="header",
+*         type="string",
+*         required=true,
+*     ),
 *     @SWG\Parameter(
 *         name="email",
 *         in="query",
@@ -87,6 +101,12 @@ class AuthController extends Controller
 *         type="boolean",
 *         required=false,
 *     ),
+*		@SWG\Parameter(
+*         name="Auto Login",
+*         in="query",
+*         type="boolean",
+*         required=false,
+*     ),
 *     @SWG\Response(
 *         response=201,
 *         description="OK",
@@ -97,6 +117,10 @@ class AuthController extends Controller
 *       		"expires_at"="string",
 *     		}
 *		 }
+*     ),
+*		@SWG\Response(
+*         response=401,
+*         description="Unauthorized",
 *     ),
 * )
 */
@@ -117,9 +141,13 @@ class AuthController extends Controller
         $token = $tokenResult->token;
         if ($request->remember_me)
             $token->expires_at = Carbon::now()->addWeeks(1);
-        $token->save();
+		$token->save();
+		$accessToken = "Bearer " . $tokenResult->accessToken;
+		$user = User::where('email', $request->email)
+					->update(['access_token' => $accessToken]);
+		
         return response()->json([
-            'access_token' => $tokenResult->accessToken,
+            'access_token' => $accessToken,
             'token_type' => 'Bearer',
             'expires_at' => Carbon::parse(
                 $tokenResult->token->expires_at
@@ -127,11 +155,22 @@ class AuthController extends Controller
         ]);
     }
   
-    /**
-     * Logout user (Revoke the token)
-     *
-     * @return [string] message
-     */
+/**
+* @SWG\Get(
+*     path="/api/auth/logout",
+*     description="Return Message",
+*     @SWG\Parameter(
+*         name="Authorization",
+*         in="header",
+*         type="string",
+*         required=true,
+*     ),
+*     @SWG\Response(
+*         response=200,
+*         description="OK",
+*     ),
+* )
+*/
     public function logout(Request $request)
     {
         $request->user()->token()->revoke();

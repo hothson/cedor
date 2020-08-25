@@ -30,4 +30,17 @@ Route::group([
         Route::get('logout', 'AuthController@logout');
         Route::get('user', 'AuthController@user');
     });
+
+    Route::get('/autologin/{user}', function (User $user) {
+        Auth::login($user);
+    
+        return redirect()->home();
+    })->name('autologin')->middleware('signed');
+   
+});
+
+Route::group(["prefix" => 'member'], function() {
+    Route::group(['middleware' => 'auth:api'], function() {
+        route::get('/', 'MemberController@index');
+    });
 });
