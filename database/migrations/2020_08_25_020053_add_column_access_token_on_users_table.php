@@ -14,7 +14,7 @@ class AddColumnAccessTokenOnUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->longText('access_token');
+            $table->longText('access_token')->nullable();
         });
     }
 

@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+// Route::get('swagger', function () {
+//     return redirect('/swagger-ui/dist/index.html');
+// });
+
 Route::group([
     'prefix' => 'auth'
 ], function () {
@@ -31,16 +35,18 @@ Route::group([
         Route::get('user', 'AuthController@user');
     });
 
-    Route::get('/autologin/{user}', function (User $user) {
-        Auth::login($user);
-    
-        return redirect()->home();
-    })->name('autologin')->middleware('signed');
-   
 });
 
-Route::group(["prefix" => 'member'], function() {
+Route::group(["prefix" => 'members'], function() {
     Route::group(['middleware' => 'auth:api'], function() {
-        route::get('/', 'MemberController@index');
+        Route::get('/', 'Api\MemberController@index')->name('products.index');
+        Route::post('/', 'Api\MemberController@store')->name('products.store');
+        Route::get('/{member}', 'Api\MemberController@show')->name('products.show');
+        Route::put('/{member}', 'Api\MemberController@update')->name('products.update');
+        Route::delete('/{member}', 'Api\MemberController@destroy')->name('products.destroy');
     });
 });
+
+// Route::group(['middleware' => 'auth:api'], function() {
+//     Route::get('/products', 'ProductController@index')->name('products.index');
+// });

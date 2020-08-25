@@ -15,6 +15,70 @@
         "http"
     ],
     "paths": {
+        "/api/members": {
+            "post": {
+                "description": "Return Json",
+                "parameters": [
+                    {
+                        "name": "account_number",
+                        "in": "body",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "age",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "gender",
+                        "in": "query",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "phone_number",
+                        "in": "query",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "notes",
+                        "in": "query",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "examples": {
+                            "application/json": {
+                                "account_number": "A001",
+                                "name": "Son",
+                                "age": "29",
+                                "gender": "Male",
+                                "phone_number": "0921173391",
+                                "notes": "Check me",
+                                "updated_at": "2020-08-25T09:36:12.000000Z",
+                                "created_at": "2020-08-25T09:36:12.000000Z",
+                                "id": 2
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
         "/api/auth/signup": {
             "post": {
                 "description": "Return Successful Message",
