@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Member;
+use App\Models\YogaClass;
 use Illuminate\Http\Request;
 
-class MemberController extends Controller
+class YogaClassController extends Controller
 {
     /**
     * @SWG\Get(
-    *     path="/api/members",
+    *     path="/api/yogaClasses",
     *     description="Return Json",
     *     @SWG\Parameter(
     *         name="Authorization",
@@ -23,15 +23,15 @@ class MemberController extends Controller
     *         description="OK",
     *         examples={
     *     		"application/json": {
-    *       		"account_number": "A001",
-    *               "name": "Son",
-    *               "age": "29",
-    *               "gender": "Male",
-    *               "phone_number": "0921173391",
+    *       		"instructor": "A001",
+    *               "attendent": "22",
+    *               "vitamin_D": "ddd",
+    *               "started_at": "20200303",
+    *               "ended_at": "20200304",
     *               "notes": "Check me",
-    *               "updated_at": "2020-08-25T09:36:12.000000Z",
-    *               "created_at": "2020-08-25T09:36:12.000000Z",
-    *               "id": 2
+    *               "updated_at": "2020-08-26T04:18:51.000000Z",
+    *               "created_at": "2020-08-26T04:18:51.000000Z",
+    *               "id": 1
     *     		}
     *		 }
     *     ),
@@ -43,14 +43,14 @@ class MemberController extends Controller
     */
     public function index()
     {
-        $members = Member::all();
+        $r = YogaClass::all();
         
-        return response()->json($members, 200);
+        return response()->json($r, 200);
     }
 
     /**
     * @SWG\Post(
-    *     path="/api/members",
+    *     path="/api/yogaClasses",
     *     description="Return Json",
     *     @SWG\Parameter(
     *         name="Authorization",
@@ -59,31 +59,31 @@ class MemberController extends Controller
     *         required=true,
     *     ),
     *      @SWG\Parameter(
-    *         name="account_number",
+    *         name="instructor",
     *         in="query",
     *         type="string",
     *         required=true,
     *     ),
     *     @SWG\Parameter(
-    *         name="name",
+    *         name="attendent",
     *         in="query",
-    *         type="string",
+    *         type="integer",
     *         required=true,
     *     ),
     *      @SWG\Parameter(
-    *         name="age",
+    *         name="vitamin_D",
     *         in="query",
     *         type="integer",
     *         required=false,
     *     ),
     *      @SWG\Parameter(
-    *         name="gender",
+    *         name="started_at",
     *         in="query",
     *         type="string",
     *         required=false,
     *     ),
     *      @SWG\Parameter(
-    *         name="phone_number",
+    *         name="ended_at",
     *         in="query",
     *         type="string",
     *         required=false,
@@ -99,16 +99,16 @@ class MemberController extends Controller
     *         description="OK",
     *         examples={
     *     		"application/json": {
-    *       		"account_number": "A001",
-    *               "name": "Son",
-    *               "age": "29",
-    *               "gender": "Male",
-    *               "phone_number": "0921173391",
+    *               "instructor": "A001",
+    *               "attendent": "22",
+    *               "vitamin_D": "ddd",
+    *               "started_at": "20200303",
+    *               "ended_at": "20200304",
     *               "notes": "Check me",
-    *               "updated_at": "2020-08-25T09:36:12.000000Z",
-    *               "created_at": "2020-08-25T09:36:12.000000Z",
-    *               "id": 2
-    *     		}
+    *               "updated_at": "2020-08-26T04:18:51.000000Z",
+    *               "created_at": "2020-08-26T04:18:51.000000Z",
+    *               "id": 1
+    *               }
     *		 }
     *     ),
     *		@SWG\Response(
@@ -119,19 +119,19 @@ class MemberController extends Controller
     */
     public function store(Request $request)
     {
-        $member = Member::create($request->all());
+        $yogaClass = YogaClass::create($request->all());
 
-        return response()->json($member, 201);
+        return response()->json($yogaClass, 201);
     }
 
     /**
     * @SWG\Get(
-    *     path="/api/members/{memberId}",
+    *     path="/api/yogaClasses/{yogaClassId}",
     *     description="Return Json",
     *     @SWG\Parameter(
-    *         name="memberId",
+    *         name="yogaClassId",
     *         in="path",
-    *         type="string",
+    *         type="integer",
     *         required=true,
     *     ),
     *     @SWG\Parameter(
@@ -145,15 +145,15 @@ class MemberController extends Controller
     *         description="OK",
     *         examples={
     *     		"application/json": {
-    *       		"account_number": "A001",
-    *               "name": "Son",
-    *               "age": "29",
-    *               "gender": "Male",
-    *               "phone_number": "0921173391",
+    *       		"instructor": "A001",
+    *               "attendent": "22",
+    *               "vitamin_D": "ddd",
+    *               "started_at": "20200303",
+    *               "ended_at": "20200304",
     *               "notes": "Check me",
-    *               "updated_at": "2020-08-25T09:36:12.000000Z",
-    *               "created_at": "2020-08-25T09:36:12.000000Z",
-    *               "id": 2
+    *               "updated_at": "2020-08-26T04:18:51.000000Z",
+    *               "created_at": "2020-08-26T04:18:51.000000Z",
+    *               "id": 1
     *     		}
     *		 }
     *     ),
@@ -163,53 +163,53 @@ class MemberController extends Controller
     *     ),
     * )
     */
-    public function show(Member $member)
+    public function show(YogaClass $yogaClass)
     {
-        return response()->json($member, 200);
+        return response()->json($yogaClass, 200);
     }
 
-   /**
+    /**
     * @SWG\Put(
-    *     path="/api/members/{memberId}",
-    *     description="Return Boolean",
-    *     @SWG\Parameter(
-    *         name="memberId",
-    *         in="path",
-    *         type="string",
-    *         required=true,
-    *     ),
+    *     path="/api/yogaClasses/{yogaClassId}",
+    *     description="Return Json",
     *     @SWG\Parameter(
     *         name="Authorization",
     *         in="header",
     *         type="string",
     *         required=true,
     *     ),
+    *     @SWG\Parameter(
+    *         name="yogaClassId",
+    *         in="path",
+    *         type="integer",
+    *         required=true,
+    *     ),
     *      @SWG\Parameter(
-    *         name="account_number",
+    *         name="instructor",
     *         in="query",
     *         type="string",
     *         required=true,
     *     ),
     *     @SWG\Parameter(
-    *         name="name",
+    *         name="attendent",
     *         in="query",
-    *         type="string",
+    *         type="integer",
     *         required=true,
     *     ),
     *      @SWG\Parameter(
-    *         name="age",
+    *         name="vitamin_D",
     *         in="query",
     *         type="integer",
     *         required=false,
     *     ),
     *      @SWG\Parameter(
-    *         name="gender",
+    *         name="started_at",
     *         in="query",
     *         type="string",
     *         required=false,
     *     ),
     *      @SWG\Parameter(
-    *         name="phone_number",
+    *         name="ended_at",
     *         in="query",
     *         type="string",
     *         required=false,
@@ -221,8 +221,21 @@ class MemberController extends Controller
     *         required=false,
     *     ),
     *     @SWG\Response(
-    *         response=200,
+    *         response=201,
     *         description="OK",
+    *         examples={
+    *     		"application/json": {
+    *               "instructor": "A001",
+    *               "attendent": "22",
+    *               "vitamin_D": "ddd",
+    *               "started_at": "20200303",
+    *               "ended_at": "20200304",
+    *               "notes": "Check me",
+    *               "updated_at": "2020-08-26T04:18:51.000000Z",
+    *               "created_at": "2020-08-26T04:18:51.000000Z",
+    *               "id": 1
+    *           }
+    *		 }
     *     ),
     *		@SWG\Response(
     *         response=401,
@@ -230,19 +243,19 @@ class MemberController extends Controller
     *     ),
     * )
     */
-    public function update(Request $request, Member $member)
+    public function update(Request $request, YogaClass $yogaClass)
     {
-        $member = $member->update($request->all());
+        $yogaClass = $yogaClass->update($request->all());
 
-        return response()->json($member, 200);
+        return response()->json($yogaClass, 200);
     }
 
     /**
     * @SWG\Delete(
-    *     path="/api/members/{memberId}",
+    *     path="/api/yogaClasses/{yogaClassId}",
     *     description="Return Json",
     *     @SWG\Parameter(
-    *         name="memberId",
+    *         name="yogaClassId",
     *         in="path",
     *         type="string",
     *         required=true,
@@ -263,9 +276,9 @@ class MemberController extends Controller
     *     ),
     * )
     */
-    public function destroy(Member $member)
+    public function destroy(YogaClass $yogaClass)
     {
-        $r = $member->delete();
+        $r = $yogaClass->delete();
 
         return response()->json($r, 200);
     }

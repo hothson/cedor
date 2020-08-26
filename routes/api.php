@@ -14,14 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-// Route::get('swagger', function () {
-//     return redirect('/swagger-ui/dist/index.html');
-// });
-
 Route::group([
     'prefix' => 'auth'
 ], function () {
@@ -47,6 +39,22 @@ Route::group(["prefix" => 'members'], function() {
     });
 });
 
-// Route::group(['middleware' => 'auth:api'], function() {
-//     Route::get('/products', 'ProductController@index')->name('products.index');
-// });
+Route::group(["prefix" => 'walking-classes'], function() {
+    Route::group(['middleware' => 'auth:api'], function() {
+        Route::get('/', 'Api\WalkingClassController@index');
+        Route::post('/', 'Api\WalkingClassController@store');
+        Route::get('/{walkingClass}', 'Api\WalkingClassController@show');
+        Route::put('/{walkingClass}', 'Api\WalkingClassController@update');
+        Route::delete('/{walkingClass}', 'Api\WalkingClassController@destroy');
+    });
+});
+
+Route::group(["prefix" => 'yogaClasses'], function() {
+    Route::group(['middleware' => 'auth:api'], function() {
+        Route::get('/', 'Api\YogaClassController@index');
+        Route::post('/', 'Api\YogaClassController@store');
+        Route::get('/{yogaClass}', 'Api\YogaClassController@show');
+        Route::put('/{yogaClass}', 'Api\YogaClassController@update');
+        Route::delete('/{yogaClass}', 'Api\YogaClassController@destroy');
+    });
+});
