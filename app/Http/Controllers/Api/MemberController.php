@@ -165,6 +165,8 @@ class MemberController extends Controller
     */
     public function show(Member $member)
     {
+        $member = $member->with('yogaClasses', "walkingClasses")->find($member->id);
+
         return response()->json($member, 200);
     }
 
