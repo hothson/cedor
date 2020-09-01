@@ -164,7 +164,8 @@ class YogaClassController extends Controller
     * )
     */
     public function show(YogaClass $yogaClass)
-    {
+    {   
+        $yogaClass = $yogaClass->with('members')->find($yogaClass->id);
         return response()->json($yogaClass, 200);
     }
 

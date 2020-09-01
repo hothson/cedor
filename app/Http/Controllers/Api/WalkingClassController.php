@@ -165,7 +165,7 @@ class WalkingClassController extends Controller
     */
     public function show(WalkingClass $walkingClass)
     {
-
+        $walkingClass = $walkingClass->with('members')->find($walkingClass->id);
         return response()->json($walkingClass, 200);
     }
 
