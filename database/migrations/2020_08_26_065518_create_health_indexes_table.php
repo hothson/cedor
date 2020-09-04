@@ -21,6 +21,8 @@ class CreateHealthIndexesTable extends Migration
             $table->decimal('belly_fat')->nullable();
             $table->decimal('subcutaneous_fate')->nullable();
             $table->decimal('bone_muscle_mass')->nullable();
+            $table->date('date')->nullable();
+            $table->date('time')->nullable();
             $table->timestamps();
         });
     }

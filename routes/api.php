@@ -36,6 +36,7 @@ Route::group(["prefix" => 'members'], function() {
         Route::get('/{member}', 'Api\MemberController@show')->name('products.show');
         Route::put('/{member}', 'Api\MemberController@update')->name('products.update');
         Route::delete('/{member}', 'Api\MemberController@destroy')->name('products.destroy');
+        Route::get('search/{search}', 'Api\MemberController@search');
     });
 });
 
@@ -46,6 +47,7 @@ Route::group(["prefix" => 'walking-classes'], function() {
         Route::get('/{walkingClass}', 'Api\WalkingClassController@show');
         Route::put('/{walkingClass}', 'Api\WalkingClassController@update');
         Route::delete('/{walkingClass}', 'Api\WalkingClassController@destroy');
+        Route::get('search/{search}', 'Api\WalkingClassController@search');
     });
 });
 
@@ -56,5 +58,6 @@ Route::group(["prefix" => 'yogaClasses'], function() {
         Route::get('/{yogaClass}', 'Api\YogaClassController@show');
         Route::put('/{yogaClass}', 'Api\YogaClassController@update');
         Route::delete('/{yogaClass}', 'Api\YogaClassController@destroy');
+        Route::get('search/{search}', 'Api\YogaClassController@search');
     });
 });

@@ -283,4 +283,11 @@ class WalkingClassController extends Controller
 
         return response()->json($r, 200);
     }
+
+    public function search($search)
+    {
+        $members = WalkingClass::where('instructor', 'like', "%{$search}%")->get();
+
+        return response()->json($members, 200);
+    }
 }

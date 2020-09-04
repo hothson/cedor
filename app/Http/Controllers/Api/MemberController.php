@@ -271,4 +271,11 @@ class MemberController extends Controller
 
         return response()->json($r, 200);
     }
+
+    public function search($search)
+    {
+        $members = Member::where('name', 'like', "%{$search}%")->get();
+
+        return response()->json($members, 200);
+    }
 }
