@@ -119,6 +119,9 @@ class WalkingClassController extends Controller
     */
     public function store(Request $request)
     {
+        $request->validate([
+            'instructor' => 'required',
+        ]);
         $walking_class = WalkingClass::create($request->all());
 
         return response()->json($walking_class, 201);
@@ -246,6 +249,10 @@ class WalkingClassController extends Controller
     */
     public function update(Request $request, WalkingClass $walkingClass)
     {
+        $request->validate([
+            'instructor' => 'required',
+        ]);
+        
         $walkingClass = $walkingClass->update($request->all());
 
         return response()->json($walkingClass, 200);

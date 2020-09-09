@@ -119,6 +119,10 @@ class YogaClassController extends Controller
     */
     public function store(Request $request)
     {
+        $request->validate([
+            'instructor' => 'required',
+        ]);
+
         $yogaClass = YogaClass::create($request->all());
 
         return response()->json($yogaClass, 201);
@@ -246,6 +250,10 @@ class YogaClassController extends Controller
     */
     public function update(Request $request, YogaClass $yogaClass)
     {
+        $request->validate([
+            'instructor' => 'required',
+        ]);
+        
         $yogaClass = $yogaClass->update($request->all());
 
         return response()->json($yogaClass, 200);

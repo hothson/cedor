@@ -119,6 +119,11 @@ class MemberController extends Controller
     */
     public function store(Request $request)
     {
+        $request->validate([
+            'account_number' => 'required',
+            'name' => 'required'
+        ]);
+
         $member = Member::create($request->all());
 
         return response()->json($member, 201);
@@ -234,6 +239,11 @@ class MemberController extends Controller
     */
     public function update(Request $request, Member $member)
     {
+        $request->validate([
+            'account_number' => 'required',
+            'name' => 'required'
+        ]);
+        
         $member = $member->update($request->all());
 
         return response()->json($member, 200);
