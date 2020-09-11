@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Member extends Model
 {
     protected $table = "members";
-    protected $fillable = ["account_number", "name", "age", "gender", "phone_number", "notes"];
+    protected $fillable = ["account_number", "name", "date_of_birth", "gender", "phone_number", "notes"];
 
     public function yogaClasses()
     {
