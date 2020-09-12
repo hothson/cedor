@@ -14,5 +14,6 @@ class DatabaseSeeder extends Seeder
         $this->call(MemberSeeder::class);
         $this->call(MemberYogaSeeder::class);
         $this->call(MemberWalkingSeeder::class);
+        $this->call(HealthIndexSeeder::class);
     }
 }

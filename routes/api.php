@@ -37,6 +37,7 @@ Route::group(["prefix" => 'members'], function() {
         Route::put('/{member}', 'Api\MemberController@update')->name('products.update');
         Route::delete('/{member}', 'Api\MemberController@destroy')->name('products.destroy');
         Route::get('search/{search}', 'Api\MemberController@search');
+        Route::get('healthIndexes/{memberId}', 'Api\MemberController@getHealthIndexes');
     });
 });
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Member;
 use Illuminate\Http\Request;
+use App\Models\HealthIndex;
 
 class MemberController extends Controller
 {
@@ -170,7 +171,11 @@ class MemberController extends Controller
     */
     public function show(Member $member)
     {
-        $member = $member->with('yogaClasses', "walkingClasses")->find($member->id);
+        $member = $member->with('yogaClasses', "walkingClasses")
+            ->with(['healthIndexes' => function ($query) {
+                $query->orderBy('date', 'desc')->first();
+            }])
+            ->find($member->id);
 
         return response()->json($member, 200);
     }
@@ -287,5 +292,111 @@ class MemberController extends Controller
         $members = Member::where('name', 'like', "%{$search}%")->get();
 
         return response()->json($members, 200);
+    }
+
+    public function getHealthIndexes($memberId)
+    {
+        $healthIndexes = HealthIndex::where('member_id', $memberId)
+            ->orderBy('date', 'asc')->get();
+        
+        if (empty($healthIndexes)) {
+            return response()->json($healthIndexes, 200);
+        }
+
+        $beginningPoint = $healthIndexes[0];
+        
+        foreach ($healthIndexes as $key => $healthIndex) {
+            if ($key == 0) continue;
+            $changingRatePoint = [
+                'weight' => $this->getChangingRate($beginningPoint, $healthIndex, 'weight'),
+                'body_fat' => $this->getChangingRate($beginningPoint, $healthIndex, 'body_fat'),
+                'belly_fat' => $this->getChangingRate($beginningPoint, $healthIndex, 'belly_fat'),
+                'subcutaneous_fate' => $this->getChangingRate($beginningPoint, $healthIndex, 'subcutaneous_fate'),
+                'bone_muscle_mass' => $this->getChangingRate($beginningPoint, $healthIndex, 'bone_muscle_mass'),
+                'vitamin_D' => $this->getChangingRate($beginningPoint, $healthIndex, 'vitamin_D'),
+                'date' => $healthIndex['date']
+            ];
+            $changingRatePointsRaw[] = $changingRatePoint;
+            
+        }
+        $indexesDataPoints = $this->getDataPointsForAllIndexes($healthIndexes);
+        $changingRatePoints = $this->getChangingPointsForAllIndexes($changingRatePointsRaw);
+
+        return response()->json(array(
+            'indexPoints' => $indexesDataPoints,
+            'changingRatePoints' => $changingRatePoints,
+        ), 200);
+    }
+
+    private function getChangingPointsForAllIndexes($changingRatePointsRaw)
+    {
+        foreach ($changingRatePointsRaw as $key => $changingPointIndex) {
+            $weightPoints[] = $this->getChangingPointForIndex($changingPointIndex, 'weight');
+            $bodyFatPoints[] = $this->getChangingPointForIndex($changingPointIndex, 'body_fat');
+            $bellyFatPoints[] = $this->getChangingPointForIndex($changingPointIndex, 'belly_fat');
+            $subcutaneousFatPoints[] = $this->getChangingPointForIndex($changingPointIndex, 'subcutaneous_fate');
+            $boneMuscleMassPoints[] = $this->getChangingPointForIndex($changingPointIndex, 'bone_muscle_mass');
+            $vitaminDPoints[] = $this->getChangingPointForIndex($changingPointIndex, 'vitamin_D');
+        }
+
+        $changingRatePoints['changing_rate_weight'] = $weightPoints;
+        $changingRatePoints['changing_rate_body_fat'] = $bodyFatPoints;
+        $changingRatePoints['changing_rate_belly_fat'] = $bellyFatPoints;
+        $changingRatePoints['changing_rate_subcutaneous_fate'] = $subcutaneousFatPoints;
+        $changingRatePoints['changing_rate_bone_muscle_mass'] = $boneMuscleMassPoints;
+        $changingRatePoints['changing_rate_vitamin_D'] = $vitaminDPoints;
+        
+        return $changingRatePoints;
+    }
+
+    private function getChangingPointForIndex($changingPointIndex, $key)
+    {
+        $point[$key] = $changingPointIndex[$key];
+        $point['date'] = $changingPointIndex['date'];
+
+        return $point;
+    }
+
+    private function getDataPointsForAllIndexes($healthIndexes)
+    {
+        foreach ($healthIndexes as $key => $healthIndex) {
+            $weightPoints[] = $this->getDataPointForIndex($healthIndex, 'weight');
+            $bodyFatPoints[] = $this->getDataPointForIndex($healthIndex, 'body_fat');
+            $bellyFatPoints[] = $this->getDataPointForIndex($healthIndex, 'belly_fat');
+            $subcutaneousFatPoints[] = $this->getDataPointForIndex($healthIndex, 'subcutaneous_fate');
+            $boneMuscleMassPoints[] = $this->getDataPointForIndex($healthIndex, 'bone_muscle_mass');
+            $vitaminDPoints[] = $this->getDataPointForIndex($healthIndex, 'vitamin_D');
+        }
+
+        $indexesDataPoints['weight_index'] = $weightPoints;
+        $indexesDataPoints['body_fat_index'] = $bodyFatPoints;
+        $indexesDataPoints['belly_fat_index'] = $bellyFatPoints;
+        $indexesDataPoints['subcutaneous_fate_index'] = $subcutaneousFatPoints;
+        $indexesDataPoints['bone_muscle_mass_index'] = $boneMuscleMassPoints;
+        $indexesDataPoints['vitamin_D_index'] = $vitaminDPoints;
+        
+        return $indexesDataPoints;
+    }
+
+    private function getDataPointForIndex($healthIndex, $key)
+    {
+        $point[$key] = $healthIndex[$key];
+        $point['date'] = $healthIndex['date'];
+
+        return $point;
+    }
+
+    private function getChangingRate($beginningPoint, $healthIndex, $key)
+    {   $standard = [
+            "weight" => 80,
+            "body_fat" => 20,
+            "belly_fat" => 20,
+            "subcutaneous_fate" => 20,
+            "bone_muscle_mass" => 20,
+            "vitamin_D" => 400,
+        ];
+        $result = ($healthIndex[$key] - $beginningPoint[$key])/($standard[$key] - $beginningPoint[$key]);
+
+        return ceil($result*100);
     }
 }

@@ -18,4 +18,9 @@ class Member extends Model
     {
         return $this->belongsToMany("App\Models\WalkingClass", 'member_walking', 'member_id', 'walking_id');
     }
+
+    public function healthIndexes()
+    {
+        return $this->hasMany("App\Models\HealthIndex", 'member_id', 'id');
+    }
 }
