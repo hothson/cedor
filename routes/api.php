@@ -62,3 +62,9 @@ Route::group(["prefix" => 'yogaClasses'], function() {
         Route::get('search/{search}', 'Api\YogaClassController@search');
     });
 });
+
+Route::group(["prefix" => 'stat'], function() {
+    Route::group(['middleware' => 'auth:api'], function() {
+        Route::get('/', 'Api\StatController@index');
+    });
+});
