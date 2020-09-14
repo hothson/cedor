@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use Illuminate\Http\Request;
 use App\Models\HealthIndex;
+use Illuminate\Support\Facades\Config;
 
 class MemberController extends Controller
 {
@@ -401,15 +402,8 @@ class MemberController extends Controller
     }
 
     private function getChangingRate($beginningDate, $healthIndex, $key)
-    {   $standard = [
-            "weight" => 80,
-            "body_fat" => 20,
-            "belly_fat" => 20,
-            "subcutaneous_fate" => 20,
-            "colon_fat" => 20,
-            "bone_muscle_mass" => 20,
-            "vitamin_D" => 400,
-        ];
+    {   $standard = config('constants.standard');
+
         $result = ($healthIndex[$key] - $beginningDate[$key])/($standard[$key] - $beginningDate[$key]);
 
         return ceil($result*100);
