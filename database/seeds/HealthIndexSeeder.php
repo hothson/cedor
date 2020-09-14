@@ -27,6 +27,7 @@ class HealthIndexSeeder extends Seeder
                     'body_fat' => $faker->randomNumber(2),
                     'belly_fat' => $faker->randomNumber(2),
                     'subcutaneous_fate' => $faker->randomNumber(2),
+                    'colon_fat' => $faker->randomNumber(2),
                     'bone_muscle_mass' => $faker->randomNumber(2),
                     'vitamin_D' => $faker->randomNumber(3),
                     'date' => $faker->unique()->date('Y-m-d'),

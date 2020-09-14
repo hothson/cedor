@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\HealthIndex;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\ Carbon;
 
 class StatController extends Controller
 {
@@ -34,12 +35,56 @@ class StatController extends Controller
         $avgChangingRateRawTimes = $this->caculateChangingRate($avgHealthIndexes);
         $avgChangingRatePoints = $this->getDataPointsForAllAvgChangingRate($avgChangingRateRawTimes);
 
-        $stats = $this->caculateStatsForAllIndexes($avgChangingRateRawTimes);
+        $indexStats = $this->caculateStatsForAllIndexes($avgChangingRateRawTimes);
         
+        $memberStats = $this->getMembersStat();
+
         return response()->json(array(
                 'avgChangingRatePoints' => $avgChangingRatePoints,
-                'stats' =>  $stats
+                'indexStats' =>  $indexStats,
+                'memberStats' =>  $memberStats,
+                'status' => 200
             ), 200);
+    }
+
+    private function getMembersStat()
+    {
+        $total = DB::table('members')->count();
+
+        $monthAbsenting = DB::table('members')
+            ->leftJoin('member_walking', 'members.id', '=', 'member_walking.member_id')
+            ->leftJoin('walking_classes', 'member_walking.walking_id', '=', 'walking_classes.id')
+
+            ->leftJoin('member_yoga', 'members.id', '=', 'member_yoga.member_id')
+            ->leftJoin('yoga_classes', 'member_yoga.yoga_id', '=', 'yoga_classes.id')
+
+            ->select(DB::raw('members.id as member_id'))
+
+            ->where('walking_classes.attendance', '<', Carbon::now()->subDays(30))
+            ->where('yoga_classes.attendance', '<', Carbon::now()->subDays(30))
+            ->groupBy('members.id')
+            ->get()
+            ->count();
+        
+        $currentMembers = DB::table('members')
+            ->leftJoin('member_walking', 'members.id', '=', 'member_walking.member_id')
+            ->leftJoin('walking_classes', 'member_walking.walking_id', '=', 'walking_classes.id')
+
+            ->leftJoin('member_yoga', 'members.id', '=', 'member_yoga.member_id')
+            ->leftJoin('yoga_classes', 'member_yoga.yoga_id', '=', 'yoga_classes.id')
+
+            ->select(DB::raw('members.id as member_id'))
+
+            ->where('walking_classes.attendance', '=', Carbon::now()->format('Y-m-d'))
+            ->orWhere('yoga_classes.attendance', '=', Carbon::now()->format('Y-m-d'))
+            ->groupBy('members.id')
+            ->get()
+            ->count();
+        
+        return array(
+            'total' => $total,
+            'monthAbsenting' => $monthAbsenting,
+            "currentMembers" => $currentMembers);
     }
 
     private function caculateStatsForAllIndexes($avgChangingRateRawTimes)
@@ -145,4 +190,5 @@ class StatController extends Controller
 
         return ceil($result*100);
     }
+
 }
