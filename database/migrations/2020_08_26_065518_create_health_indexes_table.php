@@ -22,7 +22,6 @@ class CreateHealthIndexesTable extends Migration
             $table->decimal('subcutaneous_fate', 4, 1)->nullable();
             $table->decimal('colon_fat', 4, 1)->nullable();
             $table->decimal('bone_muscle_mass', 4, 1)->nullable();
-            $table->bigInteger('vitamin_D')->nullable();
             $table->date('date')->nullable();
             $table->integer('time')->nullable();
             $table->timestamps();

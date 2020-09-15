@@ -20,15 +20,15 @@ class StatController extends Controller
                     AVG(body_fat) as avg_body_fat,
                     AVG(belly_fat) as avg_belly_fat,
                     AVG(subcutaneous_fate) as avg_subcutaneous_fate,
+                    AVG(colon_fat) as avg_colon_fat,
                     AVG(bone_muscle_mass) as avg_bone_muscle_mass,
-                    AVG(vitamin_D) as avg_vitamin_D,
                     time')
             )
             ->groupBy('time')
             ->orderBy('time', 'asc')
             ->get();
 
-        if (empty($avgHealthIndexes)) {
+        if ($avgHealthIndexes->isEmpty()) {
             return response()->json($avgHealthIndexes, 200);
         }
 
@@ -90,17 +90,17 @@ class StatController extends Controller
     private function caculateStatsForAllIndexes($avgChangingRateRawTimes)
     {
         $keys = ['avg_cr_weight', 'avg_cr_body_fat', 'avg_cr_belly_fat', 'avg_cr_subcutaneous_fate',
-             'avg_cr_bone_muscle_mass', 'avg_cr_vitamin_D'];
+             'avg_cr_bone_muscle_mass'];
         
         foreach ($keys as $key) {
-            $stat = $this->caculateWeightChangingRateStat($avgChangingRateRawTimes, $key);
+            $stat = $this->caculateChangingRateStat($avgChangingRateRawTimes, $key);
             $stats[$key] = $stat;
         }
 
         return $stats;
     }
 
-    private function caculateWeightChangingRateStat($avgChangingRateRawTimes, $key)
+    private function caculateChangingRateStat($avgChangingRateRawTimes, $key)
     {
         $weightArray = array_map(function($item) use ($key) {
             return $item[$key];
@@ -128,16 +128,16 @@ class StatController extends Controller
             $bodyFatPoints[] = $this->getDataPointForIndex($avgChangingRateRawTime, 'avg_cr_body_fat');
             $bellyFatPoints[] = $this->getDataPointForIndex($avgChangingRateRawTime, 'avg_cr_belly_fat');
             $subcutaneousFatPoints[] = $this->getDataPointForIndex($avgChangingRateRawTime, 'avg_cr_subcutaneous_fate');
+            $colonFatPoints[] = $this->getDataPointForIndex($avgChangingRateRawTime, 'avg_cr_colon_fat');
             $boneMuscleMassPoints[] = $this->getDataPointForIndex($avgChangingRateRawTime, 'avg_cr_bone_muscle_mass');
-            $vitaminDPoints[] = $this->getDataPointForIndex($avgChangingRateRawTime, 'avg_cr_vitamin_D');
         }
 
         $avgChangingRatePoints['avg_cr_weight'] = $weightPoints;
         $avgChangingRatePoints['avg_cr_body_fat'] = $bodyFatPoints;
         $avgChangingRatePoints['avg_cr_belly_fat'] = $bellyFatPoints;
         $avgChangingRatePoints['avg_cr_subcutaneous_fate'] = $subcutaneousFatPoints;
+        $avgChangingRatePoints['avg_cr_colon_fat'] = $colonFatPoints;
         $avgChangingRatePoints['avg_cr_bone_muscle_mass'] = $boneMuscleMassPoints;
-        $avgChangingRatePoints['avg_cr_vitamin_D'] = $vitaminDPoints;
         
         return $avgChangingRatePoints;
     }
@@ -163,8 +163,8 @@ class StatController extends Controller
                 'avg_cr_body_fat' => $this->getChangingRate($beginningPoint, $avgHealthIndex, 'avg_body_fat'),
                 'avg_cr_belly_fat' => $this->getChangingRate($beginningPoint, $avgHealthIndex, 'avg_belly_fat'),
                 'avg_cr_subcutaneous_fate' => $this->getChangingRate($beginningPoint, $avgHealthIndex, 'avg_subcutaneous_fate'),
+                'avg_cr_colon_fat' => $this->getChangingRate($beginningPoint, $avgHealthIndex, 'avg_colon_fat'),
                 'avg_cr_bone_muscle_mass' => $this->getChangingRate($beginningPoint, $avgHealthIndex, 'avg_bone_muscle_mass'),
-                'avg_cr_vitamin_D' => $this->getChangingRate($beginningPoint, $avgHealthIndex, 'avg_vitamin_D'),
                 'time' => $avgHealthIndex['time']
             ];
             $avgChangingRateRawTimes[] = $changingRateTime;
@@ -177,16 +177,9 @@ class StatController extends Controller
 
     private function getChangingRate($beginningPoint, $avgHealthIndex, $key)
     {
-        $standard = [
-            "avg_weight" => 80,
-            "avg_body_fat" => 20,
-            "avg_belly_fat" => 20,
-            "avg_subcutaneous_fate" => 20,
-            "avg_bone_muscle_mass" => 20,
-            "avg_vitamin_D" => 400,
-        ];
+        $avgStandard = config('constants.avgStandard');
 
-        $result = ($avgHealthIndex[$key] - $beginningPoint[$key])/($standard[$key] - $beginningPoint[$key]);
+        $result = ($avgHealthIndex[$key] - $beginningPoint[$key])/($avgStandard[$key] - $beginningPoint[$key]);
 
         return ceil($result*100);
     }

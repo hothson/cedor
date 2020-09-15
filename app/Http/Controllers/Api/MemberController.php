@@ -7,6 +7,7 @@ use App\Models\Member;
 use Illuminate\Http\Request;
 use App\Models\HealthIndex;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class MemberController extends Controller
 {
@@ -300,7 +301,7 @@ class MemberController extends Controller
         $healthIndexes = HealthIndex::where('member_id', $memberId)
             ->orderBy('date', 'asc')->get();
         
-        if (empty($healthIndexes)) {
+        if ($healthIndexes->isEmpty()) {
             return response()->json($healthIndexes, 200);
         }
 
@@ -309,11 +310,26 @@ class MemberController extends Controller
         
         $indexesDataPoints = $this->getDataPointsForEachIndex($healthIndexes);
 
+        $vataminDDataPoints = $this->getVitaminDDataPoints($memberId);
+
         return response()->json(array(
             'indexPoints' => $indexesDataPoints,
             'changingRatePoints' => $changingRatePoints,
+            'vitaminDDataPoints' => $vataminDDataPoints,
             'status' => 'OK'
         ), 200);
+    }
+
+    private function getVitaminDDataPoints($memberId)
+    {
+        $vitaminDDataPoints = DB::table('members')
+            ->leftJoin('member_walking', 'members.id', '=', 'member_walking.member_id')
+            ->leftJoin('walking_classes', 'member_walking.walking_id', '=', 'walking_classes.id')
+            ->select('walking_classes.vitamin_D', 'date')
+            ->where('members.id', '=', $memberId)
+            ->get();
+
+        return $vitaminDDataPoints;
     }
 
     private function getrawChangingRateDatas($healthIndexes)
@@ -329,7 +345,6 @@ class MemberController extends Controller
                 'subcutaneous_fate' => $this->getChangingRate($beginningDate, $healthIndex, 'subcutaneous_fate'),
                 'colon_fat' => $this->getChangingRate($beginningDate, $healthIndex, 'colon_fat'),
                 'bone_muscle_mass' => $this->getChangingRate($beginningDate, $healthIndex, 'bone_muscle_mass'),
-                'vitamin_D' => $this->getChangingRate($beginningDate, $healthIndex, 'vitamin_D'),
                 'date' => $healthIndex['date']
             ];
             $rawChangingRate[] = $changingRatePoint;
@@ -348,7 +363,6 @@ class MemberController extends Controller
             $subcutaneousFatPoints[] = $this->getChangingPointForIndex($changingPointIndex, 'subcutaneous_fate');
             $colonFatPoints[] = $this->getChangingPointForIndex($changingPointIndex, 'colon_fat');
             $boneMuscleMassPoints[] = $this->getChangingPointForIndex($changingPointIndex, 'bone_muscle_mass');
-            $vitaminDPoints[] = $this->getChangingPointForIndex($changingPointIndex, 'vitamin_D');
         }
 
         $changingRatePoints['CR_weight'] = $weightPoints;
@@ -357,7 +371,6 @@ class MemberController extends Controller
         $changingRatePoints['CR_subcutaneous_fate'] = $subcutaneousFatPoints;
         $changingRatePoints['CR_colon_fat'] = $colonFatPoints;
         $changingRatePoints['CR_bone_muscle_mass'] = $boneMuscleMassPoints;
-        $changingRatePoints['CR_vitamin_D'] = $vitaminDPoints;
         
         return $changingRatePoints;
     }
@@ -379,7 +392,6 @@ class MemberController extends Controller
             $subcutaneousFatPoints[] = $this->getDataPointForIndex($healthIndex, 'subcutaneous_fate');
             $colonFatPoints[] = $this->getDataPointForIndex($healthIndex, 'colon_fat');
             $boneMuscleMassPoints[] = $this->getDataPointForIndex($healthIndex, 'bone_muscle_mass');
-            $vitaminDPoints[] = $this->getDataPointForIndex($healthIndex, 'vitamin_D');
         }
 
         $indexesDataPoints['weight_index'] = $weightPoints;
@@ -388,7 +400,6 @@ class MemberController extends Controller
         $indexesDataPoints['subcutaneous_fate_index'] = $subcutaneousFatPoints;
         $indexesDataPoints['colon_fat_index'] = $colonFatPoints;
         $indexesDataPoints['bone_muscle_mass_index'] = $boneMuscleMassPoints;
-        $indexesDataPoints['vitamin_D_index'] = $vitaminDPoints;
         
         return $indexesDataPoints;
     }
