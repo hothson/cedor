@@ -39,12 +39,12 @@ class StatController extends Controller
         
         $memberStats = $this->getMembersStat();
 
-        return response()->json(array(
-                'avgChangingRatePoints' => $avgChangingRatePoints,
-                'indexStats' =>  $indexStats,
-                'memberStats' =>  $memberStats,
-                'status' => 200
-            ), 200);
+        return response()->json([
+            'avgChangingRatePoints' => $avgChangingRatePoints,
+            'indexStats' =>  $indexStats,
+            'memberStats' =>  $memberStats,
+            'status' => 200
+        ], 200);
     }
 
     private function getMembersStat()
@@ -138,7 +138,19 @@ class StatController extends Controller
         $avgChangingRatePoints['avg_cr_colon_fat'] = $colonFatPoints;
         $avgChangingRatePoints['avg_cr_bone_muscle_mass'] = $boneMuscleMassPoints;
         
-        return $avgChangingRatePoints;
+        $returnData = [];
+        
+
+        foreach ($avgChangingRatePoints as $key => $chart) {
+            $tmp = (object)[];
+            
+            $tmp->alias = $key;
+            $tmp->coordinates = $chart;
+
+            $returnData[] = $tmp;
+        }
+
+        return $returnData;
     }
 
     private function getDataPointForIndex($avgChangingRateRawTime, $key)
