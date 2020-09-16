@@ -96,7 +96,7 @@ class StatController extends Controller
             $stat = $this->caculateChangingRateStat($avgChangingRateRawTimes, $key);
             $stats[$key] = $stat;
         }
-
+        
         return $stats;
     }
 
@@ -109,7 +109,7 @@ class StatController extends Controller
         $weightAbsArr = array_map(function($item) use ($key) {
             return abs($item[$key]);
         }, $avgChangingRateRawTimes);
-
+       
         $avgWeightChangingRate = ceil(array_sum($weightArray)/count($weightArray));
         $maxWeightChangingRate = max($weightAbsArr);
         $minWeightChangingRate = min($weightAbsArr);

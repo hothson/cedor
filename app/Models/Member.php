@@ -23,4 +23,12 @@ class Member extends Model
     {
         return $this->hasMany("App\Models\HealthIndex", 'member_id', 'id');
     }
+
+    public function latestWalkingClass()
+    {
+        $latestWalkingClass = $this->belongsToMany("App\Models\WalkingClass", 'member_walking', 'member_id', 'walking_id')
+            ->latest('date')->first();
+
+        return $latestWalkingClass;
+    }
 }

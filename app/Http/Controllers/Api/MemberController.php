@@ -173,13 +173,22 @@ class MemberController extends Controller
     */
     public function show(Member $member)
     {
-        $member = $member->with('yogaClasses', "walkingClasses")
+        $memberData = $member->with('yogaClasses', "walkingClasses")
             ->with(['healthIndexes' => function ($query) {
                 $query->orderBy('date', 'desc')->first();
             }])
             ->find($member->id);
+        $date = $memberData->healthIndexes[0]['date'];
+        $latestWalkingClass = $member->latestWalkingClass();
+        if ($latestWalkingClass['attendance'] != $date) {
+            $latestWalkingClass = [];
+        }
 
-        return response()->json($member, 200);
+        return response()->json(array(
+                'standard' => $standard = config('constants.standard'),
+                'member' => $memberData,
+                'latestWalkingClass' => $latestWalkingClass
+            ), 200);
     }
 
    /**
@@ -316,6 +325,7 @@ class MemberController extends Controller
             'indexPoints' => $indexesDataPoints,
             'changingRatePoints' => $changingRatePoints,
             'vitaminDDataPoints' => $vataminDDataPoints,
+            'CR_standard' => $standard = config('constants.CR_standard'),
             'status' => 'OK'
         ), 200);
     }
