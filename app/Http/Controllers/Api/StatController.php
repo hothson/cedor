@@ -89,9 +89,8 @@ class StatController extends Controller
 
     private function caculateStatsForAllIndexes($avgChangingRateRawTimes)
     {
-        $keys = ['avg_cr_weight', 'avg_cr_body_fat', 'avg_cr_belly_fat', 'avg_cr_subcutaneous_fate',
-             'avg_cr_bone_muscle_mass'];
-        
+        $keys = config('constants.indexKey');
+
         foreach ($keys as $key) {
             $stat = $this->caculateChangingRateStat($avgChangingRateRawTimes, $key);
             $stats[$key] = $stat;

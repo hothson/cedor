@@ -24,4 +24,8 @@ return [
         "colon_fat" => 10,
         "bone_muscle_mass" => 10,
     ],
+    'indexKey' => [
+        'avg_cr_weight', 'avg_cr_body_fat', 'avg_cr_belly_fat',
+        'avg_cr_subcutaneous_fate', 'avg_cr_colon_fat', 'avg_cr_bone_muscle_mass'
+    ],
 ];
