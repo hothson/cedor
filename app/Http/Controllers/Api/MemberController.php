@@ -382,7 +382,16 @@ class MemberController extends Controller
         $changingRatePoints['CR_colon_fat'] = $colonFatPoints;
         $changingRatePoints['CR_bone_muscle_mass'] = $boneMuscleMassPoints;
         
-        return $changingRatePoints;
+        $returnData = [];
+        foreach ($changingRatePoints as $key => $chart)
+        {
+            $tmp = (object)[];
+            $tmp->alias = $key;
+            $tmp->coordinates = $chart;
+            $returnData[] = $tmp;
+        }
+
+        return $returnData;
     }
 
     private function getChangingPointForIndex($changingPointIndex, $key)
@@ -411,7 +420,16 @@ class MemberController extends Controller
         $indexesDataPoints['colon_fat_index'] = $colonFatPoints;
         $indexesDataPoints['bone_muscle_mass_index'] = $boneMuscleMassPoints;
         
-        return $indexesDataPoints;
+        $returnData = [];
+        foreach ($indexesDataPoints as $key => $chart)
+        {
+            $tmp = (object)[];
+            $tmp->alias = $key;
+            $tmp->coordinates = $chart;
+            $returnData[] = $tmp;
+        }
+
+        return $returnData;
     }
 
     private function getDataPointForIndex($healthIndex, $key)

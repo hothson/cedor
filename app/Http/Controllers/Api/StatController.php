@@ -139,7 +139,6 @@ class StatController extends Controller
         $avgChangingRatePoints['avg_cr_bone_muscle_mass'] = $boneMuscleMassPoints;
         
         $returnData = [];
-        
 
         foreach ($avgChangingRatePoints as $key => $chart) {
             $tmp = (object)[];
