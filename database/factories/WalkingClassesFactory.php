@@ -10,7 +10,6 @@ $factory->define(WalkingClass::class, function (Faker $faker) {
         'date' => Carbon\Carbon::now()->format('Y-m-d'),
         'instructor' => $faker->name,
         'attendent' => $faker->randomNumber(2),
-        'attendance' => '2020-09-01',
         'vitamin_D' => $faker->randomNumber(2),
         'started_at' => $faker->time($format='H:i', $max='now'),
         'ended_at' => $faker->time($format='H:i', $max='now'),

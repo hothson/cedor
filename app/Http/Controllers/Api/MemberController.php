@@ -173,16 +173,33 @@ class MemberController extends Controller
     */
     public function show(Member $member)
     {
-        $memberData = $member->with('yogaClasses', "walkingClasses")
-            ->with(['healthIndexes' => function ($query) {
-                $query->orderBy('date', 'desc')->first();
-            }])
-            ->find($member->id);
-        $date = $memberData->healthIndexes[0]['date'];
-        $latestWalkingClass = $member->latestWalkingClass();
-        if ($latestWalkingClass['attendance'] != $date) {
-            $latestWalkingClass = [];
-        }
+        $walkingClasses = DB::table('members')
+            ->leftJoin('walking_attendance', 'members.id', '=', 'walking_attendance.member_id')
+            ->select('walking_attendance.walking_id', 'walking_attendance.attendance', 'walking_attendance.vitaminD')
+            ->where('members.id', $member->id)
+            ->get();
+
+        $yogaClasses = DB::table('members')
+            ->leftJoin('yoga_attendance', 'members.id', '=', 'yoga_attendance.member_id')
+            ->select('yoga_attendance.yoga_id', 'yoga_attendance.attendance')
+            ->where('members.id', $member->id)
+            ->get();
+
+        $latestHealthIndexes =  DB::table('members')
+            ->leftJoin('health_indexes', 'members.id', '=', 'health_indexes.member_id')
+            ->where('members.id', $member->id)
+            ->orderBy('date', 'desc')
+            ->first();
+
+        $memberData['walkingClasses'] = $walkingClasses;
+        $memberData['yogaClasses'] = $yogaClasses;
+        $memberData['latestHealthIndexes'] = $latestHealthIndexes;
+
+        $latestDate = $latestHealthIndexes->date;
+
+        $latestWalkingClass = DB::table('walking_attendance')
+            ->where('attendance', $latestDate)
+            ->first();
 
         return response()->json(array(
                 'standard' => $standard = config('constants.standard'),

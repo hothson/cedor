@@ -52,31 +52,25 @@ class StatController extends Controller
         $total = DB::table('members')->count();
 
         $monthAbsenting = DB::table('members')
-            ->leftJoin('member_walking', 'members.id', '=', 'member_walking.member_id')
-            ->leftJoin('walking_classes', 'member_walking.walking_id', '=', 'walking_classes.id')
-
-            ->leftJoin('member_yoga', 'members.id', '=', 'member_yoga.member_id')
-            ->leftJoin('yoga_classes', 'member_yoga.yoga_id', '=', 'yoga_classes.id')
+            ->leftJoin('walking_attendance', 'members.id', '=', 'walking_attendance.member_id')
+            ->leftJoin('yoga_attendance', 'members.id', '=', 'yoga_attendance.member_id')
 
             ->select(DB::raw('members.id as member_id'))
 
-            ->where('walking_classes.attendance', '<', Carbon::now()->subDays(30))
-            ->where('yoga_classes.attendance', '<', Carbon::now()->subDays(30))
+            ->where('walking_attendance.attendance', '<', Carbon::now()->subDays(30))
+            ->where('yoga_attendance.attendance', '<', Carbon::now()->subDays(30))
             ->groupBy('members.id')
             ->get()
             ->count();
         
         $currentMembers = DB::table('members')
-            ->leftJoin('member_walking', 'members.id', '=', 'member_walking.member_id')
-            ->leftJoin('walking_classes', 'member_walking.walking_id', '=', 'walking_classes.id')
-
-            ->leftJoin('member_yoga', 'members.id', '=', 'member_yoga.member_id')
-            ->leftJoin('yoga_classes', 'member_yoga.yoga_id', '=', 'yoga_classes.id')
+            ->leftJoin('walking_attendance', 'members.id', '=', 'walking_attendance.member_id')
+            ->leftJoin('yoga_attendance', 'members.id', '=', 'yoga_attendance.member_id')
 
             ->select(DB::raw('members.id as member_id'))
 
-            ->where('walking_classes.attendance', '=', Carbon::now()->format('Y-m-d'))
-            ->orWhere('yoga_classes.attendance', '=', Carbon::now()->format('Y-m-d'))
+            ->whereBetween('walking_attendance.attendance', [Carbon::now()->subDays(30), Carbon::now()])
+            ->orWhereBetween('yoga_attendance.attendance', [Carbon::now()->subDays(30), Carbon::now()])
             ->groupBy('members.id')
             ->get()
             ->count();
